@@ -1,6 +1,9 @@
 # TTsCWBot
 
-Гильдовый бот для [ChatWars](https://telegram.me/chtwrsbot?start=a4d216d4750842208716ff0d5ed6bc6e) — текстовой RPG на базе Telegram. Бот умеет считать разницу ресурсов в стоке гильдии, а также
-запоминать назначаемые пользователями триггеры — @TTsCWBot (https://t.me/TTsCWBot)
+Гильдовый бот для [ChatWars](https://telegram.me/chtwrsbot?start=940ee62a86ae4671875e0af4f3c76ad3) — текстовой RPG на базе Telegram. Бот умеет считать разницу ресурсов в стоке гильдии, а также
+запоминать назначаемые пользователями триггеры.
 
-Используемый стек библиотек: aiogram 3.0b (в т.ч. FSM), asyncio, redis.
+@TTsCWBot (https://t.me/TTsCWBot)
+
+Используемый стек библиотек: aiogram 3.0b (в т.ч. FSM), asyncio, redis. Бот живет на
+ Ubuntu-сервере, обновляется из этого репозитория.

@@ -20,7 +20,8 @@ bot_token: str = config.tg_bot.token
 async def main() -> None:
     storage: MemoryStorage = MemoryStorage()
     dp: Dispatcher = Dispatcher(storage=storage, fsm_strategy=FSMStrategy.CHAT)
-    # dp.message.filter(F.chat.type != "private")
+    # бот не работает в личных переписках
+    dp.message.filter(F.chat.type != "private")
     dp.include_router(common_handlers.router)
     dp.include_router(guild_stock.router)
     dp.include_router(triggers.router)
