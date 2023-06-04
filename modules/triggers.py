@@ -94,7 +94,7 @@ async def show_triggers(message: Message) -> None:
     # Создаем кортеж со всеми ключами, которые соответствуют шаблону
     # <id чата, где вызывают команду_*>.
     # Метод scan возвращает количество найденных ключей и их список.
-    triggers: set = {i.decode("utf-8") for i in r.scan(match=f'{message.chat.id}_*')[1]}
+    triggers: set = {i.decode("utf-8") for i in r.scan(match=f'{message.chat.id}_*', count=1000)[1]}
 
     # Выстраиваем ключи построчно и отвечаем пользователю
     text: str = 'Список триггеров:\n\n'
@@ -110,7 +110,7 @@ async def display_trigger(message: Message) -> None:
     # Переводим текст в байтовую строку и ищем в БД соответствующий ключ
     # по шаблону <id чата>_<имя триггера>
     chat_trigger: bytes = f'{message.chat.id}_{message.text}'.encode("utf-8")
-    if chat_trigger in r.scan(match=f'{message.chat.id}_*')[1]:
+    if chat_trigger in r.scan(match=f'{message.chat.id}_*', count=1000)[1]:
 
         # Если ключ найден, то вытаскиваем его значение и делим строку по комбинации символов ' _|_ '
         trigger_text: str = r.get(chat_trigger).decode("utf-8")

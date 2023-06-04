@@ -88,7 +88,7 @@ async def get_new_stock(message: Message, state: FSMContext):
     # Считаем разницу
     resulting_resources: dict[str, int] = dict()
     for key in resources:
-        resulting_resources[key] = stocks['new_stock'].get(key, 0) - stocks['initial_stock'].get(key, 0)
+        resulting_resources[key]: int = stocks['new_stock'].get(key, 0) - stocks['initial_stock'].get(key, 0)
 
     # Формируем итоговое сообщение
     if any(resulting_resources.values()):
