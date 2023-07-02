@@ -65,9 +65,14 @@ def process_stock_into_dict(message: Message) -> dict[str, int]:
     return initial_stock_dict
 
 
+# с помощью регулярки отсекаем ненужные ресурсы, которые не могут украсть из гильдстока
+# регулярка используется в фильтре двух следующих хендлеров
+regex: str = r'Guild Warehouse: \d+\n(?:[0-2]\d|3[0-5])'
+
+
 # Хендлер для обработки сообщений от игрового бота, содержащих список ресурсов в гильдстоке.
 # При отправке первичного списка ресурсов состояние FSM неважно
-@router.message(F.forward_from.id == 408101137, F.text.regexp(r'Guild Warehouse: \d+\n\d'),
+@router.message(F.forward_from.id == 408101137, F.text.regexp(regex),
                 StateFilter(default_state))
 async def get_initial_stock(message: Message, state: FSMContext) -> None:
     # Сохраняем в хранилище результат преобразования стока в словарь
@@ -78,7 +83,7 @@ async def get_initial_stock(message: Message, state: FSMContext) -> None:
 
 
 # Хендлер для обработки сообщений с новым списком ресурсов
-@router.message(F.forward_from.id == 408101137, F.text.regexp(r'Guild Warehouse: \d+\n\d'),
+@router.message(F.forward_from.id == 408101137, F.text.regexp(regex),
                 StateFilter(FSMFillForm.send_new_stock))
 async def get_new_stock(message: Message, state: FSMContext):
     await state.update_data(new_stock=process_stock_into_dict(message))
