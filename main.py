@@ -21,7 +21,7 @@ async def main() -> None:
     storage: MemoryStorage = MemoryStorage()
     dp: Dispatcher = Dispatcher(storage=storage, fsm_strategy=FSMStrategy.CHAT)
     # бот не работает в личных переписках
-    dp.message.filter(F.chat.type != "private")
+    # dp.message.filter(F.chat.type != "private")
     dp.include_router(common_handlers.router)
     dp.include_router(guild_stock.router)
     dp.include_router(triggers.router)

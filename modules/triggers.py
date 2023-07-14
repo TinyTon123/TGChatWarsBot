@@ -109,7 +109,7 @@ async def show_triggers(message: Message) -> None:
 async def display_trigger(message: Message) -> None:
     # Переводим текст в байтовую строку и ищем в БД соответствующий ключ
     # по шаблону <id чата>_<имя триггера>
-    chat_trigger: bytes = f'{message.chat.id}_{message.text.lower()}'.encode("utf-8")
+    chat_trigger: bytes = f'{message.chat.id}_{message.text.lower().strip(".")}'.encode("utf-8")
     if chat_trigger in r.scan(match=f'{message.chat.id}_*', count=1000)[1]:
 
         # Если ключ найден, то вытаскиваем его значение и делим строку по комбинации символов ' _|_ '
