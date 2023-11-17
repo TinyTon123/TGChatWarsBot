@@ -44,7 +44,8 @@ resources: tuple = (
     '35 Crafted leather',
     '36 Quality Cloth',
     '37 Blacksmith mold',
-    '38 Artisan mold'
+    '38 Artisan mold',
+    '82 Mithril ore'
     )
 
 
