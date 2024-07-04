@@ -1,4 +1,3 @@
-
 from aiogram import Router, F
 from aiogram.types import Message
 from aiogram.filters import StateFilter
@@ -46,7 +45,8 @@ resources: tuple = (
     '37 Blacksmith mold',
     '38 Artisan mold',
     '82 Mithril ore',
-    '88 Eminent Shard'
+    '88 Eminent Shard',
+    '89 Supreme Shard'
     )
 
 
@@ -69,7 +69,7 @@ def process_stock_into_dict(message: Message) -> dict[str, int]:
 
 # с помощью регулярки отсекаем ненужные ресурсы, которые не могут украсть из гильдстока
 # регулярка используется в фильтре двух следующих хендлеров
-regex: str = r'Guild Warehouse: \d+\n(?:[0-2]\d|3[0-8]|8[82])'
+regex: str = r'Guild Warehouse: \d+\n(?:[0-2]\d|3[0-8]|8[982])'
 
 
 # Хендлер для обработки сообщений от игрового бота, содержащих список ресурсов в гильдстоке.
