@@ -4,7 +4,7 @@ from aiogram.types import Message
 
 import redis
 
-r: redis = redis.Redis(db=1)
+redis_db: redis = redis.Redis(db=1)
 router: Router = Router()
 
 
@@ -33,19 +33,19 @@ async def display_trigger(message: Message, content: any, command: CommandObject
     # Если пользователь указал имя триггера (то есть command.args не пустой),
     # то во избежание дублей удаляем из БД соответствующий ключ
     if command.args:
-        r.delete(f"{message.chat.id}_{command.args.lower()}")
+        redis_db.delete(f"{message.chat.id}_{command.args.lower()}")
 
         # Если тип запоминаемого сообщения — текст, то в БД вносится пара ключ-значение
         # по шаблону <id чата>_<имя триггера>: <текст сообщения, в ответ на которое дана команда>
         if isinstance(content, str):
-            r.set(f"{message.chat.id}_{command.args.lower()}", f"{content}")
+            redis_db.set(f"{message.chat.id}_{command.args.lower()}", f"{content}")
 
         # Если тип запоминаемого сообщения — фотография или картинка, то в переменную content
         # будет записан список из трех элементов, каждый из которых содержит поле file_id.
         # Вносим в БД пару ключ-значение по шаблону
         # <id чата>_<имя триггера>: <photo> _|_ <значение file_id> _|_ <подпись к фото/картинке>
         elif isinstance(content, list):
-            r.set(f"{message.chat.id}_{command.args.lower()}",
+            redis_db.set(f"{message.chat.id}_{command.args.lower()}",
                   f"photo _|_ {content[-1].file_id} _|_ {message.reply_to_message.caption}")
 
         # Если тип сообщения любой другой из допустимых, то в БД добавляем запись по шаблону
@@ -54,7 +54,7 @@ async def display_trigger(message: Message, content: any, command: CommandObject
                                                                     # костыль для перевода
                                                                     # 'VideoNote' в 'video_note'
             content_type_str = str(type(content)).split('.')[-1][:-2].replace('N', '_n').lower()
-            r.set(f"{message.chat.id}_{command.args.lower()}",
+            redis_db.set(f"{message.chat.id}_{command.args.lower()}",
                   f"{content_type_str} _|_ {content.file_id} _|_ {message.reply_to_message.caption}")
 
         # Отправляем сообщение, что новый триггер успешно добавлен
@@ -70,7 +70,7 @@ async def delete_trigger(message: Message, command: CommandObject) -> None:
     # Если после команды /del_tigger есть имя триггера, то БД пытается удалить
     # соответствующую строку
     if command.args:
-        deleted: int = r.delete(f"{message.chat.id}_{command.args.lower()}")
+        deleted: int = redis_db.delete(f"{message.chat.id}_{command.args.lower()}")
 
         # В случае, если такой ключ в БД был, в переменную deleted будет записана единица,
         # в ином случае — ноль
@@ -93,7 +93,7 @@ async def show_triggers(message: Message) -> None:
     # Создаем кортеж со всеми ключами, которые соответствуют шаблону
     # <id чата, в котором вызывают команду_*>.
     # Метод scan возвращает количество найденных ключей и их список.
-    triggers: set = {i.decode("utf-8") for i in r.scan(match=f'{message.chat.id}_*', count=1000)[1]}
+    triggers: set = {i.decode("utf-8") for i in redis_db.scan(match=f'{message.chat.id}_*', count=1000)[1]}
 
     # Выстраиваем ключи построчно и отвечаем пользователю
     text: str = 'Список триггеров:\n\n'
@@ -109,10 +109,10 @@ async def display_trigger(message: Message) -> None:
     # Переводим текст в байтовую строку и ищем в БД соответствующий ключ
     # по шаблону <id чата>_<имя триггера>
     chat_trigger: bytes = f'{message.chat.id}_{message.text.lower().strip(".")}'.encode("utf-8")
-    if chat_trigger in r.scan(match=f'{message.chat.id}_*', count=1000)[1]:
+    if chat_trigger in redis_db.scan(match=f'{message.chat.id}_*', count=1000)[1]:
 
         # Если ключ найден, то вытаскиваем его значение и делим строку по комбинации символов ' _|_ '
-        trigger_text: str = r.get(chat_trigger).decode("utf-8")
+        trigger_text: str = redis_db.get(chat_trigger).decode("utf-8")
         trigger_text: list[str] = trigger_text.split(' _|_ ')
 
         # Если значение ключа не текст, то вернется список по шаблону
