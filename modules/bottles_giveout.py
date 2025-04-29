@@ -30,9 +30,15 @@ def text_filter(message: Message) -> bool:
 
 
 @router.message(F.text, text_filter)
-async def display_trigger(message: Message) -> None:
+async def bottle_giveout(message: Message) -> None:
     command_split: list = message.text.split()
     bottle, amount = command_split[1].lower(), command_split[2]
     bottle_code: int = bottle_codes[bottle]
-    await message.answer(f"/gw_p{bottle_code:0>2}_{amount}_p{bottle_code+1:0>2}_{amount}_p{bottle_code+2:0>2}_{amount}"
-                         "\n@Tiny_Ton")
+    bottle_command = (
+        "https://t.me/chtwrsbot?text="
+        f"/gw_p{bottle_code:0>2}_{amount}_p{bottle_code+1:0>2}_{amount}_p{bottle_code+2:0>2}_{amount}"
+    )
+    await message.answer(
+        f"<a href='{bottle_command}'>Жмяк сюда</a>\n\n@Tiny_Ton",
+        disable_web_page_preview=True
+    )
