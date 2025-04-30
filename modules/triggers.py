@@ -26,18 +26,33 @@ def content_type_filter(message: Message) -> bool | dict[str, any]:
         return False
 
 
+def convert_command_to_cw_hyperlink(entities: list, content: str) -> str:
+    """Заменяет команды на гиперссылки на CW."""
+    new_content: str = content
+    cw_link_template = "https://t.me/chtwrsbot?text="
+    for entity in entities:
+        start: int = entity.offset
+        end: int = entity.offset + entity.length
+        command: str = content[start:end]
+        if entity.type == 'bot_command':
+            cw_link: str = f"<a href='{cw_link_template + command}'>{command}</a>"
+            new_content = new_content.replace(command, cw_link)
+
+    return new_content
+
+
 # хендлер для сохранения триггера
 @router.message(Command(commands=["add_trigger"]), content_type_filter)
-async def display_trigger(message: Message, content: any, command: CommandObject) -> None:
-
-    # Если пользователь указал имя триггера (то есть command.args не пустой),
-    # то во избежание дублей удаляем из БД соответствующий ключ
+async def save_trigger(message: Message, content: any, command: CommandObject) -> None:
     if command.args:
-        redis_db.delete(f"{message.chat.id}_{command.args.lower()}")
-
         # Если тип запоминаемого сообщения — текст, то в БД вносится пара ключ-значение
         # по шаблону <id чата>_<имя триггера>: <текст сообщения, в ответ на которое дана команда>
         if isinstance(content, str):
+            entities = message.reply_to_message.entities
+            # Если есть сущности, то с помощью функции ищем среди них тип "bot_command" и
+            # заменяем на гиперссылки
+            if entities:
+                content = convert_command_to_cw_hyperlink(entities, content)
             redis_db.set(f"{message.chat.id}_{command.args.lower()}", f"{content}")
 
         # Если тип запоминаемого сообщения — фотография или картинка, то в переменную content
@@ -89,7 +104,6 @@ async def delete_trigger(message: Message, command: CommandObject) -> None:
 # Хендлер для отображения списка триггеров
 @router.message(Command(commands=["show_triggers"]))
 async def show_triggers(message: Message) -> None:
-
     # Создаем кортеж со всеми ключами, которые соответствуют шаблону
     # <id чата, в котором вызывают команду_*>.
     # Метод scan возвращает количество найденных ключей и их список.
@@ -103,7 +117,7 @@ async def show_triggers(message: Message) -> None:
     await message.answer(text)
 
 
-# Хендлер для вызова триггера
+# Хендлер для отображения триггера
 @router.message(F.text)
 async def display_trigger(message: Message) -> None:
     # Переводим текст в байтовую строку и ищем в БД соответствующий ключ
@@ -126,4 +140,4 @@ async def display_trigger(message: Message) -> None:
         # Если значение ключа — это текст, то им и отвечаем, предварительно распаковав список,
         # образовавшийся после метода .split(' _|_ ') выше
         else:
-            await message.answer(*trigger_text)
+            await message.answer(*trigger_text, disable_web_page_preview=True)
