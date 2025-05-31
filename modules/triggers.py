@@ -1,8 +1,7 @@
-from aiogram.filters import Command, CommandObject
-from aiogram import Router, F, html
-from aiogram.types import Message
-
 import redis
+from aiogram import F, html, Router
+from aiogram.filters import Command, CommandObject
+from aiogram.types import Message
 
 from utils.utils import content_type_filter, convert_command_to_cw_hyperlink
 

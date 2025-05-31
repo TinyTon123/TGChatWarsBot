@@ -1,8 +1,7 @@
-from aiogram import Router, types, html
+from aiogram import html, Router, types
 from aiogram.filters import Command
 
 router: Router = Router()
-
 
 
 @router.message(Command(commands=["help"]))
@@ -34,4 +33,4 @@ async def command_help(message: types.Message) -> None:
                   "YS форэва! =)\n\n" \
                   "<i>By <a href='tg://user?id=391639940'>Tiny🍀Ton</a></i>"
 
-    await message.reply(manual)
+    await message.answer(manual)

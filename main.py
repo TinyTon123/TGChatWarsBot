@@ -9,10 +9,14 @@ from aiogram.enums import ParseMode
 from aiogram.fsm.storage.memory import MemoryStorage
 from aiogram.fsm.strategy import FSMStrategy
 
-from modules import common_handlers, guild_stock, triggers, bottles_giveout
-
-from config_data.config import load_config, Config
-
+from config_data.config import Config, load_config
+from modules import (
+    bottles_giveout,
+    common_handlers,
+    graz_on_lvl_up,
+    guild_stock,
+    triggers
+)
 
 # Загружаем конфиг в переменную config
 config: Config = load_config()
@@ -25,6 +29,7 @@ async def main() -> None:
     # бот не работает в личных переписках
     dp.message.filter(F.chat.type != "private")
     dp.include_router(common_handlers.router)
+    dp.include_router(graz_on_lvl_up.router)
     dp.include_router(guild_stock.router)
     dp.include_router(bottles_giveout.router)
     dp.include_router(triggers.router)

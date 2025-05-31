@@ -1,8 +1,8 @@
-from aiogram import Router, F
-from aiogram.types import Message
+from aiogram import F, Router
 from aiogram.filters import StateFilter
-from aiogram.fsm.state import StatesGroup, State, default_state
 from aiogram.fsm.context import FSMContext
+from aiogram.fsm.state import default_state, State, StatesGroup
+from aiogram.types import Message
 
 router: Router = Router()
 
