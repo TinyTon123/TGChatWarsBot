@@ -10,7 +10,7 @@ router: Router = Router()
 
 
 # хендлер для сохранения триггера
-@router.message(Command(commands=["add_trigger"]), content_type_filter)
+@router.message(Command(commands=["add_trigger"]), F.reply_to_message, content_type_filter)
 async def save_trigger(message: Message, content: any, command: CommandObject) -> None:
     if command.args:
         trigger_name = command.args.lower().replace('ё', 'е')

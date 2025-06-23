@@ -7,7 +7,7 @@ router: Router = Router()
 
 bottle_codes: dict[str, int] = {
     "фр": 1,
-    "рагу": 1,
+    "рага": 1,
     "фулраш": 1,
     "рейдж": 1,
     "фд": 4,
@@ -15,16 +15,16 @@ bottle_codes: dict[str, int] = {
     "пис": 4,
     "фулдеф": 4,
     "грид": 7,
-    "натуру": 10,
-    "ману": 13,
+    "натура": 10,
+    "мана": 13,
     "сумрак": 16,
     "морф": 19
 }
 
 
 def text_filter(message: Message) -> bool:
-    regex: str = (r"дай (?:ф[рд]|рагу|рейдж|деф|пис|фул(?:раш|деф)|морф|"
-                  r"сумрак|ману|натуру|грид) [1-9]\d?")
+    regex: str = (r"(?:ф[рд]|рага|рейдж|деф|пис|фул(?:раш|деф)|морф|"
+                  r"сумрак|мана|натура|грид) [1-9]\d?")
     result: list | None= re.fullmatch(regex, message.text, flags=re.IGNORECASE)
     return bool(result)
 
@@ -32,7 +32,7 @@ def text_filter(message: Message) -> bool:
 @router.message(F.text, text_filter)
 async def bottle_giveout(message: Message) -> None:
     command_split: list = message.text.split()
-    bottle, amount = command_split[1].lower(), command_split[2]
+    bottle, amount = command_split[0].lower(), command_split[1]
     bottle_code: int = bottle_codes[bottle]
     bottle_command = (
         "https://t.me/chtwrsbot?text="
