@@ -32,11 +32,12 @@ def convert_command_to_cw_hyperlink(entities: list, content: str) -> str:
     cw_link_template = "https://t.me/chtwrsbot?text="
     for entity in entities:
         command = entity.extract_from(content)
-        if (
-            entity.type == 'bot_command'
-            or cw_link_template in entity.url  # проверка на случай, если сообщение уже содержит гиперссылку на CW
-        ):
+        if entity.type == 'bot_command':
             cw_link: str = f"<a href='{cw_link_template + command}'>{command}</a>"
+            new_content = new_content.replace(command, cw_link)
+        # на случай, если сообщение уже содержит гиперссылку на CW
+        elif entity.type == 'text_link' and cw_link_template in entity.url:
+            cw_link: str = f"<a href='{entity.url}'>{command}</a>"
             new_content = new_content.replace(command, cw_link)
 
     return new_content
