@@ -18,7 +18,6 @@ from modules import (
     triggers
 )
 
-# Загружаем конфиг в переменную config
 config: Config = load_config()
 bot_token: str = config.tg_bot.token
 
